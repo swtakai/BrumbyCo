@@ -25,7 +25,7 @@ SECRET_KEY = '9ygiqy$h9l6-%np2*1*^gxsj$4&qj)4_+nr08)xx!z&0_@-6p4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['stakai.pythonanywhere.com']
 
 
 # Application definition
@@ -37,6 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_extensions',
+    'crispy_forms',
+    'rest_framework',
+    'social_django',
+    'taggit',
+    'items.apps.ItemsConfig',
+    'home.apps.HomeConfig',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'brumbyco.urls'
+ROOT_URLCONF = 'mysite.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +75,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'brumbyco.wsgi.application'
+WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 # Database

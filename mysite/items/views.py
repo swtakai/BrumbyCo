@@ -1,11 +1,11 @@
-from myarts.models import Item
-from myarts.owner import OwnerListView, OwnerDetailView, OwnerCreateView, OwnerUpdateView, OwnerDeleteView
+from items.models import Item
+from items.owner import OwnerListView, OwnerDetailView, OwnerCreateView, OwnerUpdateView, OwnerDeleteView
 
 
 class ItemListView(OwnerListView):
     model = Item
     # By convention:
-    # template_name = "myarts/article_list.html"
+    # template_name = "items/item_list.html"
 
 
 class ItemDetailView(OwnerDetailView):
