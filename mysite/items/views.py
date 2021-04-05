@@ -1,5 +1,11 @@
-from items.models import Item
+from items.models import Item, Comment
 from items.owner import OwnerListView, OwnerDetailView, OwnerCreateView, OwnerUpdateView, OwnerDeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from items.forms import CreateForm, CommentForm
+from django.urls import reverse_lazy, reverse
+from django.views import View
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 
 
 class ItemListView(OwnerListView):
@@ -10,17 +16,88 @@ class ItemListView(OwnerListView):
 
 class ItemDetailView(OwnerDetailView):
     model = Item
+    template_name = "items/item_detail.html"
+    def get(self, request, pk) :
+        x = Item.objects.get(id=pk)
+        rating, comment = Comment.objects.filter(item=x).order_by('-updated_at')
+        comment_form = CommentForm()
+        context = { 'item' : x, 'rating': rating, 'comment': comment, 'comment_form': comment_form }
+        return render(request, self.template_name, context)
 
 
 class ItemCreateView(OwnerCreateView):
-    model = Item
-    fields = ['title', 'text', 'price']
+    # model = Item
+    # fields = ['title', 'text', 'price']
+    template_name = 'items/item_form.html'
+    success_url = reverse_lazy('items:all')
+
+    def get(self, request, pk=None):
+        form = CreateForm()
+        ctx = {'form': form}
+        return render(request, self.template_name, ctx)
+
+    def post(self, request, pk=None):
+        form = CreateForm(request.POST, request.FILES or None)
+
+        if not form.is_valid():
+            ctx = {'form': form}
+            return render(request, self.template_name, ctx)
+
+        # Add owner to the model before saving
+        item = form.save(commit=False)
+        item.owner = self.request.user
+        item.save()
+        return redirect(self.success_url)
 
 
 class ItemUpdateView(OwnerUpdateView):
-    model = Item
-    fields = ['title', 'text', 'price']
+    # model = Item
+    # fields = ['title', 'text', 'price']
+    template_name = 'items/item_form.html'
+    success_url = reverse_lazy('items:all')
 
+    def get(self, request, pk):
+        item = get_object_or_404(Item, id=pk, owner=self.request.user)
+        form = CreateForm(instance=item)
+        ctx = {'form': form}
+        return render(request, self.template_name, ctx)
+
+    def post(self, request, pk=None):
+        item = get_object_or_404(Item, id=pk, owner=self.request.user)
+        form = CreateForm(request.POST, request.FILES or None, instance=item)
+
+        if not form.is_valid():
+            ctx = {'form': form}
+            return render(request, self.template_name, ctx)
+
+        item = form.save(commit=False)
+        item.save()
+
+        return redirect(self.success_url)
 
 class ItemDeleteView(OwnerDeleteView):
     model = Item
+
+def stream_file(request, pk):
+    item = get_object_or_404(Item, id=pk)
+    response = HttpResponse()
+    response['Content-Type'] = item.content_type
+    response['Content-Length'] = len(item.picture)
+    response.write(item.picture)
+    return response
+
+class CommentCreateView(LoginRequiredMixin, View):
+    def post(self, request, pk) :
+        f = get_object_or_404(Item, id=pk)
+        comment = Comment(text=request.POST['comment'], owner=request.user, item=f)
+        comment.save()
+        return redirect(reverse('items:item_detail', args=[pk]))
+
+class CommentDeleteView(OwnerDeleteView):
+    model = Comment
+    template_name = "items/item_comment_delete.html"
+
+    # https://stackoverflow.com/questions/26290415/deleteview-with-a-dynamic-success-url-dependent-on-id
+    def get_success_url(self):
+        item = self.object.item
+        return reverse('items:item_detail', args=[item.id])

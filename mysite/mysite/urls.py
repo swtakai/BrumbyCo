@@ -7,7 +7,9 @@ from django.contrib.auth import views as auth_views
 from django.views.static import serve
 
 urlpatterns = [
-    path('', include('items.urls')),  # Change to ads.urls
+    path('', include('items.urls')),
+    # ath('', include('home.urls')),
+    # path('shop/', include('items.urls')),
     path('admin/', admin.site.urls),  # Keep
     path('accounts/', include('django.contrib.auth.urls')),  # Keep
     url(r'^oauth/', include('social_django.urls', namespace='social')),

@@ -11,6 +11,11 @@ urlpatterns = [
         views.ItemUpdateView.as_view(success_url=reverse_lazy('items:all')), name='item_update'),
     path('item/<int:pk>/delete',
         views.ItemDeleteView.as_view(success_url=reverse_lazy('items:all')), name='item_delete'),
+        path('item_picture/<int:pk>', views.stream_file, name='item_picture'),
+    path('item/<int:pk>/comment',
+        views.CommentCreateView.as_view(), name='item_comment_create'),
+    path('comment/<int:pk>/delete',
+        views.CommentDeleteView.as_view(success_url=reverse_lazy('items')), name='item_comment_delete'),
 ]
 
 # We use reverse_lazy in urls.py to delay looking up the view until all the paths are defined
