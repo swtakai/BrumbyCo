@@ -8,7 +8,7 @@ from django.views.static import serve
 
 urlpatterns = [
     path('', include('items.urls')),
-    # ath('', include('home.urls')),
+    # path('', include('home.urls')),
     # path('shop/', include('items.urls')),
     path('admin/', admin.site.urls),  # Keep
     path('accounts/', include('django.contrib.auth.urls')),  # Keep

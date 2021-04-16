@@ -1,7 +1,10 @@
 from django import forms
-from items.models import Item
+from django.forms import ModelForm
+from items.models import Item, Comment, Review
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from items.humanize import naturalsize
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 
 
 # Create the form class.
@@ -46,8 +49,29 @@ class CreateForm(forms.ModelForm):
         return instance
 
 class CommentForm(forms.Form):
-    rating = forms.IntegerField(required=False, min_value = 1, max_value = 5)
-    review = forms.CharField(required=False, max_length=500, min_length=3, strip=True)
+    comment = forms.CharField(required=True, max_length=500, min_length=3, strip=True)
+
+class ReviewForm(forms.Form):
+    rating = forms.IntegerField()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-exampleForm'
+        self.helper.form_class = 'blueForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'submit_survey'
+
+        self.helper.add_input(Submit('submit', 'Submit'))
+    # class Meta:
+    #     model = Review
+    #     fields = ['subject', 'review', 'rate']
+    # def save(self, commit=True):
+    #     instance = super(ReviewForm, self).save(commit=False)
+
+    #     if commit:
+    #         instance.save()
+
+    #     return instance
 
 
 # https://docs.djangoproject.com/en/3.0/topics/http/file-uploads/

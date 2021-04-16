@@ -1,6 +1,8 @@
 from django.contrib import admin
-from items.models import Item
+from items.models import Item, Comment, Review
 
 # Register your models here.
 
 admin.site.register(Item)
+admin.site.register(Comment)
+admin.site.register(Review)

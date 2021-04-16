@@ -1,4 +1,4 @@
-{% extends "base_bootstrap.html" %}
+{% extends "base_menu.html" %}
 {% block content %}
 <h1>Items</h1>
 <p>
@@ -7,7 +7,7 @@
   {% for item in item_list %}
     <li>
         <a href="{% url 'items:item_detail'  item.id %}">{{ item.title }}</a>
-        {% if user.username == 'swtakai' %}
+        {% if user.is_superuser %}
         (<a href="{% url 'items:item_update' item.id %}">Edit</a> |
         <a href="{% url 'items:item_delete' item.id %}">Delete</a>)
         {% endif %}
@@ -19,7 +19,7 @@
 {% endif %}
 </p>
 <p>
-{% if user.username == 'swtakai' %}
+{% if user.is_superuser %}
     <a href="{% url 'items:item_create' %}">Add an Item</a> |
 {% endif %}
 {% if user.is_authenticated %}
